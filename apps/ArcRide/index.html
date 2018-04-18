@@ -1,1 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="description" content="Calcite Maps Demo - ArcGIS">
+  <meta name="author" content="">
+  <link rel="icon" href="https://www.esri.com/favicon.ico">
+  <title>ArcRide</title>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+  <!--<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
+
+  <!--<script src="js/nicescroll-3.6.0.min.js"></script>-->
+
+  <!-- Calcite Maps Bootstrap -->
+  <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.7.css">
+
+  <!-- Calcite Maps -->
+  <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-arcgis-3.x.min-v0.7.css">
+
+ 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+
+  <!-- ArcGIS JS 3.x -->
+  <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/esri/esri.css">
+  <!--https://cdn.bootcss.com/jquery.nicescroll/3.6.8/jquery.nicescroll.min.js js/nicescroll-3.6.0.min.js-->
+  <!--<script src="https://cdn.bootcss.com/jquery.nicescroll/3.6.8/jquery.nicescroll.min.js"></script>-->
+
+  <!--<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />-->
+          
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    a:link{
+      /* Applies to links under the pointer */
+      text-decoration:  none;
+    }
+    a:hover{
+      /* Applies to links under the pointer */
+      text-decoration:  none;
+    }
+    a:visited{
+      /* Applies to links under the pointer */
+      text-decoration:  none;
+    }
+    a:active{
+      /* Applies to links under the pointer */
+      text-decoration:  none;
+    }
+    .#panelInfo{
+      height: 90%;
+    }
+    .timer{
+        font-size: xx-large;
+    }
+    #BasemapToggle {
+       /* display: none;*/
+          position: absolute;
+          /*top: 80px;
+          left: 50px;*/
+          top: 10px;
+          left: 90px;
+          z-index: 50;
+    }
+    .nav1 {
+        padding: 5px 10px;
+        background: #4479BA;
+        color: #FFF;
+        border-radius: 5px;
+        border: solid 1px #20538D;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+        -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+        -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+
+    }
+    .slider.slider-horizontal {
+        width: 140px;
+        height: 20px;
+        /*margin: 10px;*/
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-bottom: 5px;
+    }
+    .slider-handle {
+      background: darkgray;
+    }
+    .slider-track-high {
+      background: dodgerblue;
+    }
+
+    .slider.slider-horizontal .slider-track {
+      
+      height: 6px;
+    }
+    .LocateButton{
+      margin: 10px;
+    }
+    .header{
+      font-size: medium;
+    }
+    *[class^='arrival']{
+      font-size: medium; 
+    }
+
+   .calcite.calcite-nav-top .esriSimpleSlider {
+    margin-top: 60px !important;
+    }
+    /*
+    a.list-group-item:hover{
+      background-color: rgb(76,76,76);
+    }*/
+    
+    .flex-container {
+      display: flex;
+      align-items: center;
+    }
+    .route-number{
+      margin-right: 20px;
+      line-height: 50px;
+      color:white;
+      text-align: center;
+      font-size: x-large;
+       width: 50px;
+       height: 50px;
+       background: red; 
+       -moz-border-radius: 25px; 
+       -webkit-border-radius: 25px; 
+       border-radius: 25px;
+    }
+    
+   
+    .calcite-bg-dark .list-group-item {
+        background-color: rgb(51, 51, 51);
+    }
+
+    /*
+    .calcite-bg-light .list-group-item {
+        background-color: blue;
+    }
+    */
+
+    .calcite-bg-dark  a.list-group-item:hover{
+      background-color: rgb(76, 76, 76);
+    }
+    
+    .calcite-bg-light  a.list-group-item:hover{
+      background-color: rgb(244, 244, 244); /*palegoldenrod;*/
+    }
+
+    .esri-icon-favorites{
+      font-size: x-large;
+      text-decoration: none;
+      margin-right: 10px;
+      /*color: yellow;*/
+    }
+
+    .calcite-bg-dark .esri-icon-favorites.selected{
+      color: orange;
+    }
+
+    .calcite-bg-dark .header{
+      color: rgb(37,144,235);
+    }
+    .calcite-bg-light .esri-icon-favorites.selected{
+      color: orange;
+    }
+
+     #LocateButton {
+      position: absolute;
+      top: 114px;
+      left: 4px;
+      z-index: 50;
+    }
+
+    hr {
+        margin-top: 0px;
+        /*margin-bottom: 8px;*/
+    }
+
+    .calcite .dijitContentPane{
+      padding: 0px;
+      overflow: visible;
+    }
+
+    #refresh {
+      /* margin-right: 10px; */
+      display: none;
+      float: right;
+      position: relative;
+      z-index: 100;
+    }
+
+  </style>
+</head>
+
+<body class="calcite calcite-maps calcite-nav-top  calcite-zoom-top-left "> <!--calcite-nav-hidden calcite-layout-inline-left calcite-margin-all-->
+
+  <!-- Navbar -->
+<!--calcite-bgcolor-dark-red   style="background-color: rgb(230, 0, 0);" calcite-bgcolor-dark-red-->
+  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-dark ">
+    <!-- Menu -->
+    <div class="dropdown calcite-dropdown calcite-bg-light calcite-text-dark" role="presentation">
+      <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">
+        <div class="calcite-dropdown-toggle">
+          <span class="sr-only">Toggle dropdown menu</span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </a>
+      <ul class="dropdown-menu">
+       <li><div id="BasemapToggle"></div></li>
+       <li><a role="button" data-target="#modalSplash" data-toggle="modal" aria-haspopup="true">About</a></li>
+        <li><a role="button" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>
+        <!--<li><a class="visible-xs" role="button" data-target="#panelSearch" aria-haspopup="true"><span class="glyphicon glyphicon-search"></span> Search</a></li>-->
+        <!--<li><a role="button" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>-->
+        <li><a role="button" data-target="#panelFavorites" aria-haspopup="true"><span class="glyphicon glyphicon-star"></span> Favourites</a></li>
+        <li>
+        <li style="margin-left: 12px">Fade Map:</li>
+        <input id="ex1" data-provide="slider" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" /></li>
+
+        <li><a role="button" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li>
+
+      </ul>
+    </div>
+    <!-- Title -->
+    <div class="calcite-title calcite-overflow-hidden">
+      <span class="calcite-title-main">ArcRide</span>
+      <span class="calcite-title-divider hidden-xs"></span>
+      <span class="calcite-title-sub hidden-xs">Starter app for the ArcGIS API for JS 3.x (dojo)</span> 
+    </div>
+     <!-- Nav -->
+
+
+    <ul class="calcite-nav nav navbar-nav" style="margin-right: 15px">   <!--hidden-xs-->  <!--<div id="LocateButton"></div>-->
+      <li><select id="mySelect" class="form-control" class="calcite-bg-dark" style="margin-top: 8px;">
+            <option value="intro" data-vector="vector-streets">Select Route</option>
+          </select> 
+      </li>                
+      <!--<li><div class="calcite-navbar-search "><select id="mySelect" style="font-size: medium;">
+              <option value="intro">Select Route</option>
+            </select><div id="searchNavDiv"></div></div></li>-->
+    </ul>
+ 
+  </nav><!--/.navbar -->
+
+  <!-- Modal Window -->
+
+  <div class="modal fade" id="modalSplash" tabindex="-1" role="dialog" aria-labelledby="splashModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="splash-body">
+                <div class="text-center">
+                  <h3>ArcRide the Rocket!</h3>
+                  <!--<input id="ex1" data-provide="slider" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/>-->
+                  <hr>
+                  <img src="https://koopjs.github.io/logo.png" style="width: 60px;">
+                  <h5>Back-end services powered by <a href="https://github.com/koopjs/koop#koop" target="_blank">Koop</a> - Damn good ETL!</h5><!--MATT-->
+                  <h5>Front-end cooked with <a href="https://esri.github.io/calcite-maps/samples/index.html" target="_blank">Calcite Maps</a></h5>
+                  <!--<p>Use this application to interactively design your application and to explore the different colors, styles and layouts. When you are done, apply the CSS styles and classes to your own apps. Get a jump-start by starting with one of the <a href="../index.html">sample applications</a>.</p>-->
+                  <br>
+                  <div class="form-inline">
+                    <div class="form-group">
+                      <button type="button" class="btn btn-success btn-lg"  data-dismiss="modal"><!--MATT--><span id="getStarted">Catch your ride</span></a>
+                    </div>
+                    <br><br>
+          <a href="https://esri.ca" target="_blank"><img  style="width:150px" src="//esri.ca/themes/esri/images/logos/esri-canada-logo.png"></a><!--class="hidden-md hidden-lg"-->
+                  </div>
+                  <br>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Container  -->
+
+  <div class="calcite-map">
+    <div id="mapViewDiv" class="calcite-map-absolute"><!--<div id="BasemapToggle"></div>--><div id="LocateButton"></div></div>
+  </div><!-- /.container -->
+
+  <!-- Panel -->
+
+  <div class="calcite-panels calcite-panels-right calcite-bg-dark calcite-text-light panel-group" role="tablist" aria-multiselectable="true" >
+          <!--style="background-color: rgb(76, 76, 76);"-->
+    <!-- Info Panel -->
+  
+    <div id="panelInfo" class="panel collapse in">
+      <div id="headingInfo" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseInfo"  aria-expanded="true" aria-controls="collapseInfo"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span><span class="panel-label">Info</span></a> 
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelInfo"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>  
+        </div>
+      </div>
+      <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
+        <div class="panel-body">
+          <!--style="margin-bottom:5px;"-->
+          <div id="featureCount" > <a href='javascript:void(0);'><img id="logo" src="https://www.ttc.ca/images/ttc-main-logo.gif" style="width:100px;margin-right: 10px;" /></a>Click on map to select stop(s)
+          </div>
+
+            <!--<div id="favorite" style="display:none;float:right;"><a href='javascript:void(0);' data-toggle="tooltip" title="Favorite" id="favoriteButton"><span class='esri-icon-favorites' style='font-size:x-large;text-decoration:none;' id="refreshPredictions"></span></a></div>-->
+
+           <div id="refresh"><a href='javascript:void(0);' data-toggle="tooltip" title="Refresh" id="refreshButton"><span class='esri-icon-refresh' style='font-size:x-large;text-decoration:none;' id="refreshPredictions"></span></a></div>
+
+            <div id="pager" style="display:none;">
+            
+            <!--<button id="previousButton" type="button" class="btn btn-default btn-circle btn-lg" data-toggle="tooltip" title="Previous"><span class="esri-icon-left-triangle-arrow" aria-hidden="true"></span>
+            <button id="nextButton" type="button" class="btn btn-default btn-circle btn-lg" data-toggle="tooltip" title="Previous"><span class="esri-icon-right-triangle-arrow" aria-hidden="true"></span>-->
+
+            <a href='javascript:void(0);' data-toggle="tooltip" title="Previous"><span class='esri-icon-left-arrow-circled' style='font-size:x-large;text-decoration:none;' id="previousButton"></span></a>
+            <a href='javascript:void(0);' data-toggle="tooltip" title="Next"><span class='esri-icon-right-arrow-circled' style='font-size:x-large;text-decoration:none;' id="nextButton"></span></a>  
+                <!--<a href='javascript:void(0);' id ="previous" class='nav' style="text-decoration: none;">&lt; Prev</a><a href='javascript:void(0);' id="next" class='nav'  style="text-decoration: none;">Next &gt;</a>-->
+            </div>
+          <div id="popup"></div>
+          <!--<p>The main styles used in this app are:</p>
+          Body
+          <li>calcite-nav-top</li>
+          <li>calcite-layout-inline-left</li>
+          <br>
+          Nav
+          <li>calcite-bgcolor-dark-purple</li>
+          <li>calcite-text-light</li>
+          <br>
+          Panels
+          <li>calcite-panels-right</li>-->
+        </div>
+      </div>
+    </div>
+  
+    <!-- Search Panel -->
+
+    <div id="panelSearch" class="panel collapse hidden-sm hidden-md hidden-lg">
+      <div id="headingSearch" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseSearch"  aria-expanded="false" aria-controls="collapseSearch"><span class="glyphicon glyphicon-search" aria-hidden="true"></span><span class="panel-label">Search</span></a> 
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelSearch"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>        
+        </div>
+      </div>
+      <div id="collapseSearch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSearch">
+        <div class="panel-body calcite-body-expander"> 
+          <div id="searchPanelDiv"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basemaps Panel -->
+    
+    <div id="panelBasemaps" class="panel collapse"> 
+      <div id="headingBasemaps" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseBasemaps" aria-expanded="false"   aria-controls="collapseBasemaps"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="panel-label">Basemaps</span></a> 
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelBasemaps"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>  
+        </div>
+      </div>
+      <div id="collapseBasemaps" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBasemaps">
+        <div class="panel-body">
+          <select id="selectBasemapPanel" class="form-control">
+            <option value="streets" data-vector="vector-streets">Streets</option>
+            <option value="satellite" data-vector="satellite">Satellite</option>
+            <option value="hybrid" data-vector="hybrid">Hybrid</option>
+            <option value="national-geographic" data-vector="national-geographic">National Geographic</option>
+            <option value="topo" data-vector="vector-streets-relief">Topographic</option>
+            <option value="gray" data-vector="vector-canvas-light">Gray</option>
+            <option value="dark-gray" data-vector="vector-canvas-dark">Dark Gray</option>
+            <option value="osm" data-vector="osm">Open Street Map</option>
+            <option value="dark-gray" data-vector="vector-streets-night">Streets Night</option>
+            <option value="streets" data-vector="vector-streets-mobile">Streets Mobile</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+     <!-- Favorites Panel -->
+    
+    <div id="panelFavorites" class="panel collapse"> 
+      <div id="headingBasemaps" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseFavorites" aria-expanded="false"   aria-controls="collapseFavorites"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="panel-label">Favourites</span></a> 
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelFavorites"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>  
+        </div>
+      </div>
+      <div id="collapseFavorites" class="panel-collapse collapse " role="tabpanel" aria-labelledby="headingBasemaps">
+        <div class="panel-body">
+
+          
+          <div class="list-group">
+            <!--<a href="#" class="list-group-item" data-routeid="501" data-stopid="14395">
+              <div class="flex-container" >
+                <div style="flex-grow: 1"><div class="route-number">501</div></div>
+                <div style="flex-grow: 6">
+                  <div style="flex-direction: column;"">
+                      <h4 >Queen S.C.</h4>
+                      <div>The Queensway At Windermere Ave West Side</div>
+                  </div>
+                </div>
+              </div>
+            </a>-->
+              
+             
+             
+      
+          </div>
+          <!--<select id="selectBasemapPanel" class="form-control">
+            <option value="streets" data-vector="vector-streets">Streets</option>
+            <option value="satellite" data-vector="satellite">Satellite</option>
+            <option value="hybrid" data-vector="hybrid">Hybrid</option>
+            <option value="national-geographic" data-vector="national-geographic">National Geographic</option>
+            <option value="topo" data-vector="vector-streets-relief">Topographic</option>
+            <option value="gray" data-vector="vector-canvas-light">Gray</option>
+            <option value="dark-gray" data-vector="vector-canvas-dark">Dark Gray</option>
+            <option value="osm" data-vector="osm">Open Street Map</option>
+            <option value="dark-gray" data-vector="vector-streets-night">Streets Night</option>
+            <option value="streets" data-vector="vector-streets-mobile">Streets Mobile</option>
+          </select>-->
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- /.calcite-panels -->
+
+    <script type="text/javascript">
+      var dojoConfig = {
+        packages: [{
+          name: "bootstrap",
+          location: "https://esri.github.io/calcite-maps/dist/vendor/dojo-bootstrap"
+          /*location:"https://arcgis103.esri.ca/calcite-officelocator/dist/vendor/dojo-bootstrap"*/
+        },
+        {
+          name: "calcite-maps",
+          location: "https://esri.github.io/calcite-maps/dist/js/dojo"
+          /*location: "https://arcgis103.esri.ca/calcite-officelocator/dist/js/dojo"*/
+        },
+        {
+          name: "arcrocket",
+          location: location.pathname.replace(/\/[^/]+$/, "") + "js"
+        }]
+      };
+
+      var queryObject = getQueryObject();
+
+       function getQueryObject(){
+        var query = window.location.search;
+        if (query.indexOf('?') > -1) {
+          query = query.substr(1);
+        }
+        var pairs = query.split('&');
+        var queryObject = {};
+        for(var i = 0; i < pairs.length; i++){
+          var splits = decodeURIComponent(pairs[i]).split('=');
+          queryObject[splits[0]] = splits[1];
+        }
+        return queryObject;
+
+
+      }
+    </script>
+
+    <!-- ArcGIS JS 3.x -->
+    <script src="https://js.arcgis.com/3.23/"></script>
+    
+
+    <script>
+        $(document).ready(function() { 
+          //$('.panel-body').niceScroll({/*cursoropacitymin:0.5,*/horizrailenabled:false}) 
+            //$("#collapseInfo").niceScroll();
+             //$("html").niceScroll({styler:"fb",cursorcolor:"#e8403f", cursorwidth: '6', cursorborderradius: '10px', background: '#404040', spacebarenabled:false,  cursorborder: '', zindex: '1000'});
+
+            // $("#collapseInfo").show();
+
+        });
+
+        var app;
+
+        require([
+          // ArcGIS
+          "esri/map",
+          "esri/dijit/Search",
+          "dojo/query",
+          "esri/arcgis/utils",
+          "dijit/layout/ContentPane",
+          "dojo/parser",
+          "dojo/dom-construct",
+          "esri/request",
+          "esri/config",
+
+          "arcrocket/calcite-arcrocket",
+
+          // Calcite Maps
+          "calcite-maps/calcitemaps-v0.3",
+          
+          // Bootstrap
+          "bootstrap/Collapse", 
+          "bootstrap/Dropdown",
+          "bootstrap/Tab",
+          "bootstrap/Modal",
+
+          "dojo/domReady!"
+        ], function(Map, Search, query, arcgisUtils, ContentPane, parser, domConstruct, esriRequest, esriConfig, ArcRocket, CalciteMaps) {
+             
+          
+          // App 
+          app = {
+            map: null,
+            basemap: "dark-gray",
+            center: [-40, 40], // lon, lat
+            zoom: 3,
+            initialExtent: null,
+            searchWidgetNav: null,
+            searchWidgetPanel: null
+          }
+
+          // Map
+          /* 
+          app.map = new Map("mapViewDiv", {
+            basemap: app.basemap,
+            center: app.center,
+            zoom: app.zoom
+          });
+
+          app.map.on("load", function(){
+            app.initialExtent = app.map.extent;
+          })*/
+
+          //Create a map based on an ArcGIS Online web map id 
+          app.ArcRocket = new ArcRocket( {webmapId:"49955b1489824f0998e3494c40489344", div:"mapViewDiv"});
+          
+          /*
+          arcgisUtils.createMap("49955b1489824f0998e3494c40489344", "mapViewDiv").then(function(response){
+            app.map = response.map;
+
+            app.ArcRocket = new ArcRocket( {app: app, jQuery: null} );
+
+            //app.map.infoWindow.set("popupWindow", false);
+
+            //$(document).ready(jQueryReady);
+            //domConstruct.place(app.cp.domNode, refNode, pos)
+
+          });*/
+
+          
+    
+          // Search
+          //app.searchDivNav = createSearchWidget("searchNavDiv");
+          app.searchWidgetPanel = createSearchWidget("searchPanelDiv");
+
+          function createSearchWidget(parentId) {
+            var search = new Search({
+              map: app.map,
+              enableHighlight: false
+              }, parentId);
+            search.startup();
+            return search;
+          }
+
+          // Basemaps
+          query("#selectBasemapPanel").on("change", function(e){
+            app.map.setBasemap(e.target.options[e.target.selectedIndex].value);
+          });
+
+          // Home
+          query(".calcite-navbar .navbar-brand").on("click", function(e) {
+            app.map.setExtent(app.initialExtent);
+          })
+
+          /*
+          app.cp = new ContentPane();
+          app.cp.startup();
+
+          domConstruct.place(app.cp.domNode, query("#popup")[0], "after");
+          */
+
+        });
+    </script>
+
+</body>
+</html>
