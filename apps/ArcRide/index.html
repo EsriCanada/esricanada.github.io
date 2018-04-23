@@ -27,8 +27,8 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
 
   <!-- ArcGIS JS 3.x -->
-  <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/esri/esri.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.24/esri/themes/calcite/dijit/calcite.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.24/esri/themes/calcite/esri/esri.css">
   <!--https://cdn.bootcss.com/jquery.nicescroll/3.6.8/jquery.nicescroll.min.js js/nicescroll-3.6.0.min.js-->
   <!--<script src="https://cdn.bootcss.com/jquery.nicescroll/3.6.8/jquery.nicescroll.min.js"></script>-->
 
@@ -199,6 +199,12 @@
       float: right;
       position: relative;
       z-index: 100;
+    }
+
+    div[class^="favorite-timer-"], div[class*=" favorite-timer-"] {
+        /*color:blue;*/
+        text-align: left;
+        font-size: x-large; 
     }
 
   </style>
@@ -402,18 +408,25 @@
 
           
           <div class="list-group">
-            <!--<a href="#" class="list-group-item" data-routeid="501" data-stopid="14395">
+            
+            <!--
+            <a href="#" class="list-group-item" data-routeid="501" data-stopid="14395">
               <div class="flex-container" >
-                <div style="flex-grow: 1"><div class="route-number">501</div></div>
+                <div style="flex-grow: 1">
+                  <div style="flex-direction: column;">
+                    <div class="route-number">501</div>
+                    <div>5:45</div>
+                  </div>
+                </div>
                 <div style="flex-grow: 6">
-                  <div style="flex-direction: column;"">
+                  <div style="flex-direction: column;">
                       <h4 >Queen S.C.</h4>
                       <div>The Queensway At Windermere Ave West Side</div>
                   </div>
                 </div>
               </div>
-            </a>-->
-              
+            </a>
+              -->
              
              
       
@@ -474,7 +487,7 @@
     </script>
 
     <!-- ArcGIS JS 3.x -->
-    <script src="https://js.arcgis.com/3.23/"></script>
+    <script src="https://js.arcgis.com/3.24/"></script>
     
 
     <script>
