@@ -91,6 +91,7 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
       }
 
       _this._useLocalStorage = supports_local_storage();
+      alert(_this._useLocalStorage);
       // source for supports_local_storage function:
       // http://diveintohtml5.org/detect.html
       function supports_local_storage() {
