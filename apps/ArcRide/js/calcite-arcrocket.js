@@ -91,7 +91,6 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
       }
 
       _this._useLocalStorage = supports_local_storage();
-      //alert(_this._useLocalStorage);
       // source for supports_local_storage function:
       // http://diveintohtml5.org/detect.html
       function supports_local_storage() {
@@ -432,8 +431,67 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
 
 		},
 
+    retrievePredictionsForFavorites: function()
+    {
+
+      var stopIdArray = [];
+
+      for (var i = 0; i < $('.list-group-item').length; i++)
+      {
+        var stopId = $('.list-group-item')[i].attributes["data-stopid"].value;
+
+        if ($.inArray(stopId, stopIdArray) === -1)
+          stopIdArray.push(stopId);
+      }
+
+      console.log(stopIdArray);
+
+      array.forEach(stopIdArray, function(stopId) {
+        _this.retrieveNextbusVehiclePrediction(stopId, true);
+      });
+
+
+    },
+
+    displayPredictionsForFavorites: function(response, stopId)
+    {
+      console.log(response);
+      //array.forEach(response, function(prediction) {
+      //Loop thru each route that makes a stop at the stop
+      for (var i = 0; i < response.length; i++){
+        console.log("favorite-timer-" + stopId + "-" + response[i].route.id);
+        var timerClass = "favorite-timer-" + stopId + "-" + response[i].route.id;
+        
+        //_this.retrieveNextbusVehiclePrediction(stopId, true);
+        //if there's a timer on the page for the route at the stop
+        if($("." + timerClass).length === 1)
+        {
+          
+          //For each route at the stop loop thru its predictions
+          for (var j = 0; j < response[i].values.length; j++){
+
+            var value = response[i].values[j];
+            var directionDivId = "#favorite-direction-" + stopId + "-" + response[i].route.id;
+            //If the prediction direction matches the timer's direction attribute
+            if ($(directionDivId)[0].innerHTML.replace("&amp;", "&") === value.direction.title)
+            {
+              var nextArrival = _this._secondsToHms(value.seconds);
+
+              $("." + timerClass)[0].innerHTML = nextArrival;
+
+              _this._jQueryCountdownTimer(timerClass);
+              break;
+            }
+          }
+
+        }
+       
+
+      }//);
+    },
+
     populateFavoritesWidget: function(){
-      
+  
       if ($('.list-group').length > 0)
         $('.list-group')[0].innerHTML = "";
 
@@ -445,6 +503,7 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
       }
 
       var favArray = [];
+      var stopIdArray = [];
       if(stopFaves !== null)
       {
         var stopFavesJSON = JSON.parse(stopFaves);
@@ -452,12 +511,17 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
         for (var i = 0; i < stopFavesJSON.length; i++)
         {
 
+          if ($.inArray(stopFavesJSON[i].stopId, stopIdArray) === -1)
+            stopIdArray.push(stopFavesJSON[i].stopId);
+
           var str1 = '<a href="javascript:void(0)" class="list-group-item" data-routeid="' + stopFavesJSON[i].routeId + '" data-stopid="' + stopFavesJSON[i].stopId + '" data-stopLocation="' + stopFavesJSON[i].stopLocation + '">';
           var str2 = '<div class="flex-container" >';
-          var str3 = '<div style="flex-grow: 1"><div class="route-number">' + stopFavesJSON[i].routeId + '</div></div>';
+          var str3 = '<div style="flex-grow: 1"><div class="justify-content-center" style="flex-direction: column;"><div class="route-number">' + stopFavesJSON[i].routeId + '</div><div class="favorite-timer-'+ stopFavesJSON[i].stopId +'-'+ stopFavesJSON[i].routeId +'">' + '5:45' + '</div></div></div>';
           var str4 = '<div style="flex-grow: 6"><div style="flex-direction: column;"">';
           var str5 = '<h4>'+ stopFavesJSON[i].stopTitle/*stopFavesJSON[i].routeTitle*/ +'</h4>';
-          var str6 = '<div>' + stopFavesJSON[i].direction  + '</div>';
+          
+          //"favorite-timer-'+ stopFavesJSON[i].stopId +'-'+ stopFavesJSON[i].routeId +'
+          var str6 = '<div id="favorite-direction-' + stopFavesJSON[i].stopId +'-'+ stopFavesJSON[i].routeId + '">' + stopFavesJSON[i].direction  + '</div>';
           var str7='</div></div></div></a>';
           
           var res = str1.concat(str2,str3,str4,str5,str6,str7);
@@ -466,6 +530,8 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
 
         }
       }
+
+      //content += "<div style='font-size:xx-large' class='timer" + value.branch + "_" + _this.j + "'>" + nextArrival + "</div>";
 
       $('.list-group-item').on('click', function() {
         console.log($(this));
@@ -480,8 +546,11 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
       });
 
       //$('.list-group').append("<a href='#' class='list-group-item'><h4 class='list-group-item-heading'>Dude</h4><p class='list-group-item-text'>Man</p></a>");
-    
-
+      /*
+      array.forEach(stopIdArray, function(stopId) {
+        _this.retrieveNextbusVehiclePrediction(stopId, true);
+      });
+      */
 
     },
 
@@ -935,27 +1004,30 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
     },
 
 
-		retrieveNextbusVehiclePrediction: function(stopId){
+		retrieveNextbusVehiclePrediction: function(stopId, routeId){
       console.log(stopId);
       //http://restbus.info/api/agencies/ttc/stops/
       var requestHandle = esriRequest({
   "url": _this.restbusUrl + "/stops/"+ stopId + "/predictions"
       });
-      requestHandle.then(_this.requestSucceeded, _this.requestFailed);
+      requestHandle.then(dojo.partial(_this.requestSucceeded, _this.requestFailed, stopId, routeId));
     },
 
-    requestSucceeded: function(response, io){
+    requestSucceeded: function(io, stopId, routeId, response){
       console.log(response);
 
-      _this.displayVehiclePredictions(response, false, true);
-     
+      if(routeId === undefined)
+        _this.displayVehiclePredictions(response, stopId, false, true);
+      else
+        _this.displayPredictionsForFavorites(response, stopId);
+        //console.log("favorite: " + stopId);
       //jQueryCountdownTimer(0);
       //jQueryCountdownTimer(1);
       //countdown();
       //registry.byId("leftPane").innerHTML += JSON.stringify(response);
       //registry.byId("predictionsPane").set("content", JSON.stringify(response));
   	},
-    displayVehiclePredictions: function(response, includeStopId, showRefresh){
+    displayVehiclePredictions: function(response, stopId, includeStopId, showRefresh){
       
       if (showRefresh)
         domUtils.show(dom.byId("refresh")); 
@@ -965,7 +1037,7 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
       var content = _this.cp.get("content");
       
       //var content = registry.byId("leftPane").get("content");
-      var updatedContent = content += _this.formatNextbusPredictions(response, includeStopId);
+      var updatedContent = content += _this.formatNextbusPredictions(response,stopId, includeStopId);
       _this.cp.set("content", updatedContent);
       //registry.byId("leftPane").set("content", updatedContent);
 
@@ -1023,6 +1095,7 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
         $(e.target).removeClass("selected")
       }
       _this.populateFavoritesWidget();
+      _this.retrievePredictionsForFavorites();
 
     },
     _isFavoriteStored_NEW: function(stopId, routeId)
@@ -1110,6 +1183,7 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
         if (minutes < 0)
         { 
           clearInterval(interval);
+          $('.' + index)[0].innerHTML = "Due";
           $('.' + index).css("color", "red");
           $('.arrival' + arrivalIndex).css("color", "red");
         }
@@ -1135,7 +1209,7 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
         }
       }, 1000);
     },
-  	formatNextbusPredictions: function(predictions, includeStopTitle)
+  	formatNextbusPredictions: function(predictions, stopId, includeStopTitle)
     {
       var content = "";
       //var j = 0;
@@ -1154,9 +1228,9 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
            //content +="<br><a href='javascript:void(0);' id='route_" + prediction.route.id + "' class='nav' style='text-decoration:none;'>Map It</a>&nbsp;<b><span style='font-size:large'>" + prediction.route.title + "</span></b>";
            //<span class="esri-icon-left-triangle-arrow" aria-hidden="true"></span>
            //var isFavoriteStore = _this._isFavoriteStored_NEW(prediction.stop.id, prediction.route.id)
-           var color = (_this._isFavoriteStored_NEW(prediction.stop.id, prediction.route.id)) ? " selected": ""; //"yellow": "rgb(63, 166, 255)"
-           
-           content +="<hr><a href='javascript:void(0);'><span class='esri-icon-favorites" + color + "' data-stop-id='" + prediction.stop.id +"' data-stop-title='" + prediction.stop.title +"' data-route-id='" + prediction.route.id +"' data-route-title='" + prediction.route.title +"' title='favorite'  id='prediction_" + prediction.route.id + "'></span></a><a href='javascript:void(0);'><span class='esri-icon-applications' data-toggle='tooltip' title='Show on map' style='font-size:x-large;text-decoration:none;' id='route_" + prediction.route.id + "'></span></a>&nbsp;<span style='font-size:large'>" + prediction.route.title + "</span>";
+           //var color = (_this._isFavoriteStored_NEW(prediction.stop.id, prediction.route.id)) ? " selected": ""; //"yellow": "rgb(63, 166, 255)"
+           var color = (_this._isFavoriteStored_NEW(stopId, prediction.route.id)) ? " selected": ""; //"yellow": "rgb(63, 166, 255)"
+           content +="<hr><a href='javascript:void(0);'><span class='esri-icon-favorites" + color + "' data-stop-id='" + stopId /*prediction.stop.id*/ +"' data-stop-title='" + prediction.stop.title +"' data-route-id='" + prediction.route.id +"' data-route-title='" + prediction.route.title +"' title='favorite'  id='prediction_" + prediction.route.id + "'></span></a><a href='javascript:void(0);'><span class='esri-icon-applications' data-toggle='tooltip' title='Show on map' style='font-size:x-large;text-decoration:none;' id='route_" + prediction.route.id + "'></span></a>&nbsp;<span style='font-size:large'>" + prediction.route.title + "</span>";
            var i = 0;
            array.forEach(prediction.values, function(value) {
             
@@ -1241,6 +1315,10 @@ function(declare, connect, query, domConstruct, arcgisUtils, ContentPane,
       domUtils.hide(dom.byId("refresh"));
     },
     openPanel: function(panelName){
+
+      if(panelName === "#panelFavorites")
+        _this.retrievePredictionsForFavorites();
+
       var panel = query(panelName);
       panelBody = query(panel).query(".panel-collapse");
       
