@@ -1,0 +1,36 @@
+<div>
+	<div style="display: none;">${nls.label1}.</div>
+	<div style="display: none;">${nls.label2}.[${config.configText}]</div>
+  <div data-dojo-attach-point="mapIdNode" style="display: none;"></div>
+  <div data-dojo-attach-point="vertexCount"></div>
+  <div data-dojo-attach-point="tabsNode"></div>
+  <div data-dojo-attach-point="tabContent1" style="height:100px">
+    <div>
+  	  <label>Domain Networks</label>
+  	  <select id = 'cmbDomainNetworks'></select>
+    </div>
+    <div>
+  	  <label>Tiers</label>
+  	  <select id = 'cmbTiers'></select>
+    </div>
+    <div>
+  	  <label>Subnetworks</label>
+  	  <select id = 'cmbSubnetworks'></select>
+    </div>
+  </div>
+  <div data-dojo-attach-point="tabContent2" style="height:100px">
+    <label>Direction</label>
+    <select id = 'cmbTraceType'>
+      <option selected="true">upstream</option>
+      <option>downstream</option>
+    </select>
+    <!--Upstream Trace-->
+  </div>
+  <button class="jimu-btn trace-btn jimu-float-trailing" data-dojo-attach-point="traceButton" data-dojo-attach-event="onclick:onTraceClick">Trace</button>
+  <button class="jimu-btn trace-toggle-btn  jimu-float-trailing" data-dojo-attach-point="toggleTraceResultsButton" data-dojo-attach-event="onclick:toggleTraceResults">Visibility</button>
+  <button class="jimu-btn trace-clear-btn jimu-float-trailing" data-dojo-attach-point="clearTraceButton" data-dojo-attach-event="onclick:onTraceClear">Clear</button>
+  
+  <div data-dojo-attach-point="progressBar" class="trace-progress" data-dojo-type="dijit/ProgressBar" data-dojo-props='value:Infinity'></div>
+  <div data-dojo-attach-point="traceStatus" class="trace-progress"></div>
+
+</div>

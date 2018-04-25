@@ -1,0 +1,9 @@
+{
+	"configText":"abcdefg",
+	"unFeatureService" : "https://utilitynetwork.esriservices.ca/server/rest/services/Electric/FeatureServer",
+	"featureService": {
+		"url" : "https://utilitynetwork.esriservices.ca/server/rest/services/Electric/FeatureServer/115",
+		"attribute": "GLOBALID"
+	},
+	"attributeTableWidgetId" : "widgets_AttributeTable_Widget_27"
+}

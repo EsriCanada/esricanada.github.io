@@ -1,0 +1,39 @@
+/*
+.jimu-widget-un div:first-child{
+  color: red;
+}*/
+
+.jimu-widget-un .trace-progress {
+	margin-top: 40px;
+	width: 100%;
+}
+
+
+.jimu-widget-un .jimu-btn{
+	/*background: #64aded;*/
+	margin: 2px;
+	/*background: rgb(0, 157, 74);
+	color:white;*/
+}
+
+.jimu-widget-un .trace-btn{
+	background: rgb(0, 157, 74);
+	color:white;
+}
+
+.jimu-widget-un .trace-toggle-btn{
+	background: rgb(223, 98, 30);
+	color:white;
+}
+
+.jimu-widget-un .trace-clear-btn{
+	background: rgb(204, 0, 0);
+	color:white;
+}
+
+.jimu-widget-un .control-node{
+	/*background: #64aded;*/
+	margin-bottom: 20px;
+	/*background: rgb(0, 157, 74);
+	color:white;*/
+}
