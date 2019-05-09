@@ -26,7 +26,7 @@
 	<img src="MCSC_AppIcon512x512.png" style="height:256px;" />
  </div>
 <div id="linkDiv" style="text-align:center;">
-	<a href="#">How-to Videos</a>	
+	<a href="javascript:showVideos();">How-to Videos</a>	
 </div>
   <div id="viewDiv" style="display:none;text-align:center;">
 	
@@ -51,6 +51,9 @@
 		window.location.href = "https://rescu.mcsc.ca";
 	}
 	console.log(window.location);
+	function showVideos(){
+		document.getElementById("viewDiv").style.display = "inline";
+	}
   </script>
 </body>
 
