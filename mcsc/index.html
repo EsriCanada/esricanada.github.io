@@ -21,7 +21,7 @@
 </head>
 
 <body style="display:flex;">
-  <div id="introDiv" style="display:none;text-align:center;">
+  <div id="introDiv" style="display:inline;text-align:center;">
 	<img src="MCSC_AppIcon512x512.png" style="height:256px;" />
 	  <a href="#">How-to Videos</a>
 	</div>
@@ -39,7 +39,7 @@
 	if(location.search === "?a2hs")
 	{
 		document.getElementById("viewDiv").style.display = "inline";
-		window.history.replaceState({},document.title, window.location.origin + window.location.pathname);
+		//window.history.replaceState({},document.title, window.location.origin + window.location.pathname);
 		addToHomescreen();
 	}
 	else {
