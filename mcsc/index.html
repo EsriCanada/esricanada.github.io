@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>MCSC rescu</title>
+  <link rel="apple-touch-icon" href="MCSC_AppIcon512x512.png">
+  <link rel="shortcut icon" type="image/png" href="24x24.png"/>
+  <!-- Responsive -->
+  <meta name="viewport" content="width=device-width">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <!-- End Responsive -->
+  <!-- Use protocol relative urls that way if the browser is viewing the page via HTTPS the js/css file will be requested using the HTTPS protocol -->
+ 
+  <!-- Load any application specific styles -->
+
+  <link rel="stylesheet" type="text/css" href="addtohomescreen.css">
+  <script src="addtohomescreen.js"></script>
+</head>
+
+<body>
+
+  <div id="viewDiv" style="width:100%;text-align:center;">
+	<img src="MCSC_AppIcon512x512.png" style="height:256px;" />
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/5nlmv2i301U" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/xkme8WFyoXw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+	
+
+
+  <script>
+	// http://localhost/rescu/?a2hs
+
+	if(location.search === "?a2hs")
+	{
+		//window.history.replaceState({},document.title, window.location.origin + window.location.pathname);
+		addToHomescreen();
+	}
+	/*else {
+		window.location.href = "https://rescu.mcsc.ca";
+	}*/
+	console.log(window.location);
+  </script>
+</body>
+
+</html>
