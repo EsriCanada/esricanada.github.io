@@ -486,7 +486,7 @@ function(declare, _WidgetsInTemplateMixin, BaseWidget, lang, Graphic,
               {
                 if(features[0].geometry.type === "polyline")
                 {
-                  //console.log("polyline");
+                  console.log("polyline");
                   this._zoomToTraceExtent(features);
                 }
               }
