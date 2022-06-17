@@ -1,0 +1,305 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Food Banks Canada</title>
+
+    <script src="https://js.arcgis.com/calcite-components/1.0.0-beta.83/calcite.esm.js" type="module"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/1.0.0-beta.83/calcite.css" />
+
+    <script src="https://js.arcgis.com/4.23/"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css" />
+  </head>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      display: flex;
+    }
+
+    calcite-loader {
+      align-self: center;
+      justify-self: center;
+    }
+
+    #header-title {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+
+    #info-content {
+      padding: 0.75rem;
+    }
+
+    calcite-rating {
+      margin-top: 0.25rem;
+    }
+
+  </style>
+
+  <body>
+    <calcite-loader active></calcite-loader>
+    <calcite-shell content-behind hidden>
+      <h2 id="header-title" slot="header">
+        <!-- Dynamically populated -->
+      </h2>
+
+      <calcite-shell-panel slot="primary-panel" detached>
+        <calcite-action-bar slot="action-bar">
+          <calcite-action data-action-id="layers" icon="layers" text="Layers"></calcite-action>
+          <calcite-action data-action-id="basemaps" icon="basemap" text="Basemaps"></calcite-action>
+          <calcite-action data-action-id="legend" icon="legend" text="Legend"></calcite-action>
+          <calcite-action data-action-id="bookmarks" icon="bookmark" text="Bookmarks"></calcite-action>
+          <calcite-action data-action-id="print" icon="print" text="Print"></calcite-action>
+          <calcite-action data-action-id="information" icon="information" text="Information"></calcite-action>
+        </calcite-action-bar>
+
+        <!-- Map-specific panels (each one provides a div for a ArcGIS JavaScript API widget) -->
+        <calcite-panel heading="Layers" height-scale="l" data-panel-id="layers" hidden>
+          <div id="layers-container"></div>
+        </calcite-panel>
+        <calcite-panel heading="Basemaps" height-scale="l" data-panel-id="basemaps" hidden>
+          <div id="basemaps-container"></div>
+        </calcite-panel>
+        <calcite-panel heading="Legend" height-scale="l" data-panel-id="legend" hidden>
+          <div id="legend-container"></div>
+        </calcite-panel>
+        <calcite-panel heading="Bookmarks" height-scale="l" data-panel-id="bookmarks" hidden>
+          <div id="bookmarks-container"></div>
+        </calcite-panel>
+        <calcite-panel heading="Print" height-scale="l" data-panel-id="print" hidden>
+          <div id="print-container"></div>
+        </calcite-panel>
+
+        <!-- Info panel (populates with info from the web map) -->
+        <calcite-panel heading="Details" data-panel-id="information" width-sclae="m">
+          <div id="info-content">
+            
+            <img id="item-thumbnail" alt="webmap thumbnail" />
+            <div id="item-description">
+              <!-- Dynamically populated -->
+            </div>
+            <calcite-radio-group>
+              <calcite-radio-group-item value="1816cac5088-layer-2" checked>Service Areas
+              </calcite-radio-group-item>
+              <calcite-radio-group-item value="1816d132408-layer-9">Gaps</calcite-radio-group-item>
+              <calcite-radio-group-item value="1816d15f7bd-layer-10">Clear</calcite-radio-group-item>
+              <!-- <calcite-radio-group-item value="maps">Maps</calcite-radio-group-item> -->
+            </calcite-radio-group>
+            <br>
+            <calcite-label layout="inline">
+              <b>Rating:</b>
+              <calcite-rating id="item-rating" read-only>
+                <!-- Dynamically populated -->
+              </calcite-rating>
+            </calcite-label>
+           
+
+          </div>
+        </calcite-panel>
+      </calcite-shell-panel>
+      <div id="viewDiv"></div>
+    </calcite-shell>
+  </body>
+  <script>
+    require([
+      "esri/WebMap",
+      "esri/views/MapView",
+      "esri/widgets/Bookmarks",
+      "esri/widgets/BasemapGallery",
+      "esri/widgets/LayerList",
+      "esri/widgets/Legend",
+      "esri/widgets/Print",
+      "esri/identity/OAuthInfo", "esri/identity/IdentityManager", "esri/widgets/Home"
+    ], function(WebMap, MapView, Bookmarks, BasemapGallery, LayerList, Legend, Print,
+                OAuthInfo, esriId, Home) {
+
+                  var info = new OAuthInfo({
+      // Swap this ID out with registered application ID
+        appId: "WTrshuLGcKzUauXC",
+        // Uncomment the next line and update if using your own portal
+        // portalUrl: "https://<host>:<port>/arcgis"
+        // Uncomment the next line to prevent the user's signed in state from being shared with other apps on the same domain with the same authNamespace value.
+        // authNamespace: "portal_oauth_inline",
+        popup: false
+      });
+      esriId.registerOAuthInfos([info]);
+
+      esriId
+        .checkSignInStatus(info.portalUrl)
+        .then(function(evt) {
+          console.log(evt);
+          token = evt.token;
+          userId = evt.userId;
+          
+        })
+        .catch(function(error) {
+          console.log(error);
+          // user will be redirected to OAuth Sign In page
+          esriId.getCredential(info.portalUrl);
+        });
+
+      const webmapId = new URLSearchParams(window.location.search).get("webmap")
+        ?? "e329d67fbc514b2787fdf5af7fcc74d9";
+
+      const map = new WebMap({
+        portalItem: {
+          id: webmapId
+        }
+      });
+
+      const view = new MapView({
+        map,
+        container: "viewDiv",
+        padding: {
+          left: 49
+        }
+      });
+
+      view.when(() => {
+        view.popup.dockEnabled = true;
+        view.popup.set("dockOptions",{position: "top-right"});
+        
+        view.map.allLayers.forEach((layer) => {
+          console.log(layer.type + ": " + layer.title + ", id " + layer.id);
+          if (layer.type === "group" && layer.id === "1816d15f7bd-layer-10")
+          {
+            layer.visibilityMode = "exclusive";
+          }
+        });
+
+      });
+
+      view.ui.move("zoom", "bottom-right");
+
+      const basemaps = new BasemapGallery({
+        view,
+        container: "basemaps-container"
+      });
+
+      const bookmarks = new Bookmarks({
+        view,
+        container: "bookmarks-container"
+      });
+
+      const layerList = new LayerList({
+        view,
+        selectionEnabled: true,
+        container: "layers-container"
+      });
+
+      const legend = new Legend({
+        view,
+        container: "legend-container"
+      });
+
+      const print = new Print({
+        view,
+        container: "print-container"
+      });
+
+      let homeWidget = new Home({
+        view: view
+      });
+
+      // adds the home widget to the top left corner of the MapView
+      view.ui.add(homeWidget, "bottom-right");
+
+      map.when(() => {
+        const { title, description, thumbnailUrl, avgRating } = map.portalItem;
+        document.querySelector("#header-title").textContent = title;
+        document.querySelector("#item-description").innerHTML = description;
+        document.querySelector("#item-thumbnail").src = "https://pro.arcgis.com/en/pro-app/2.8/help/analysis/networks/GUID-72AF7D58-72C2-49DA-8FE2-0321576FC6F6-web.png"; // thumbnailUrl;
+        document.querySelector("#item-rating").value = 5;//s avgRating;
+
+        let activeWidget;
+
+        activeWidget = activateWidget(null, "information");
+
+        const handleActionBarClick = ({ target }) => {
+          if (target.tagName !== "CALCITE-ACTION") {
+            return;
+          }
+
+          activeWidget = activateWidget(activeWidget,target.dataset.actionId);
+
+          // if (activeWidget) {
+          //   document.querySelector(`[data-action-id=${activeWidget}]`).active = false;
+          //   document.querySelector(`[data-panel-id=${activeWidget}]`).hidden = true;
+          // }
+
+          // const nextWidget = target.dataset.actionId;
+          // if (nextWidget !== activeWidget) {
+          //   document.querySelector(`[data-action-id=${nextWidget}]`).active = true;
+          //   document.querySelector(`[data-panel-id=${nextWidget}]`).hidden = false;
+          //   activeWidget = nextWidget;
+          // } else {
+          //   activeWidget = null;
+          // }
+        };
+
+        document.querySelector("calcite-action-bar").addEventListener("click", handleActionBarClick);
+
+        const handleRadioGroupClick = ({ target }) => {
+          console.log(target.innerText + ", " + target.value);
+          if (target.innerText === "Clear")
+          {
+            view.map.findLayerById(target.value).visible = false;
+          }
+          else{
+            view.map.findLayerById("1816d15f7bd-layer-10").visible = true;
+            view.map.findLayerById(target.value).visible = true;
+          }
+         
+        };
+
+        document.querySelector("calcite-radio-group").addEventListener("click", handleRadioGroupClick );
+
+      
+
+        let actionBarExpanded = false;
+
+        document.addEventListener("calciteActionBarToggle", event => {
+          actionBarExpanded = !actionBarExpanded;
+          view.padding = {
+            left: actionBarExpanded ? 135 : 45
+          };
+        });
+
+        document.querySelector("calcite-shell").hidden = false;
+        document.querySelector("calcite-loader").active = false;
+
+      });
+
+      function activateWidget(activeWidget, actionId){
+        if (activeWidget) {
+          document.querySelector(`[data-action-id=${activeWidget}]`).active = false;
+          document.querySelector(`[data-panel-id=${activeWidget}]`).hidden = true;
+
+          if(activeWidget === "directions")
+            view.popup.autoOpenEnabled = true;
+        }
+
+        const nextWidget = actionId;
+        if (nextWidget !== activeWidget) {
+          document.querySelector(`[data-action-id=${nextWidget}]`).active = true;
+          document.querySelector(`[data-panel-id=${nextWidget}]`).hidden = false;
+          activeWidget = nextWidget;
+          
+        } else {
+          activeWidget = null;
+        }
+
+        return activeWidget;
+
+      }
+    });
+  </script>
+</html>
